@@ -20,8 +20,8 @@ def keep_alive():
     t.start()
 
 # --- ТАНЗИМОТИ БОТ ---
-TOKEN = '8664780965:AAFHOqD4daSDAFXF_HAmhtcwsVnS2RYYtCI'
-ADMIN_ID = 6895966276 #
+TOKEN = '8664780965:AAG2Wp--1GF_K3yZiWt8Ll_0gSV-6Y4tr0E'
+ADMIN_ID = 6895966276 
 CHANNEL_ID = '@qawcaze'
 MY_CARD = '9762000199713891'
 
@@ -64,27 +64,27 @@ def callback_query(call):
 
     if call.data == "verify":
         if check_sub(uid):
-            bot.delete_message(call.message.chat.id, call.message.message_id)
+            bot.delete_message(call.message.chat.id, call.message.id)
             start(call.message)
         else:
             bot.answer_callback_query(call.id, "❌ Обуна нашудаед!", show_alert=True)
 
     elif call.data == "back_to_main":
-        bot.delete_message(call.message.chat.id, call.message.message_id)
+        bot.delete_message(call.message.chat.id, call.message.id)
         start(call.message)
 
     elif call.data == "ask_id_diamonds":
         user_data[uid] = {'target': 'diamonds', 'first_name': call.from_user.first_name, 'username': call.from_user.username}
-        bot.delete_message(call.message.chat.id, call.message.message_id)
+        bot.delete_message(call.message.chat.id, call.message.id)
         markup = types.InlineKeyboardMarkup()
-        markup.add(types.InlineKeyboardButton("⬅️ БА КАФО", callback_data="back_to_main")) #
+        markup.add(types.InlineKeyboardButton("⬅️ БА КАФО", callback_data="back_to_main"))
         bot.send_message(call.message.chat.id, "Лутфан 🆔-атонро фиристед ‼️✅", reply_markup=markup)
 
     elif call.data == "ask_id_combo":
         user_data[uid] = {'target': 'combo', 'first_name': call.from_user.first_name, 'username': call.from_user.username}
-        bot.delete_message(call.message.chat.id, call.message.message_id)
+        bot.delete_message(call.message.chat.id, call.message.id)
         markup = types.InlineKeyboardMarkup()
-        markup.add(types.InlineKeyboardButton("⬅️ БА КАФО", callback_data="back_to_main")) #
+        markup.add(types.InlineKeyboardButton("⬅️ БА КАФО", callback_data="back_to_main"))
         bot.send_message(call.message.chat.id, "Лутфан 🆔-атонро фиристед ‼️✅", reply_markup=markup)
 
     elif call.data.startswith("combo_"):
@@ -100,8 +100,8 @@ def callback_query(call):
 
         markup = types.InlineKeyboardMarkup()
         markup.add(types.InlineKeyboardButton("💳 Душанбе City", url=pay_url))
-        markup.add(types.InlineKeyboardButton("⬅️ БА КАФО", callback_data="back_to_main")) #
-        bot.edit_message_text(final_text, call.message.chat.id, call.message.message_id, reply_markup=markup)
+        markup.add(types.InlineKeyboardButton("⬅️ БА КАФО", callback_data="back_to_main"))
+        bot.edit_message_text(final_text, call.message.chat.id, call.message.id, reply_markup=markup)
 
     elif call.data.startswith("select_"):
         product = call.data.split("_")[1]
@@ -115,17 +115,17 @@ def callback_query(call):
                       "Баъд аз пулро супоридан чекашро партоед ‼️📊🧾")
         markup = types.InlineKeyboardMarkup()
         markup.add(types.InlineKeyboardButton("💳 Душанбе City", url=pay_url))
-        markup.add(types.InlineKeyboardButton("⬅️ БА КАФО", callback_data="back_to_main")) #
-        bot.edit_message_text(final_text, call.message.chat.id, call.message.message_id, reply_markup=markup)
+        markup.add(types.InlineKeyboardButton("⬅️ БА КАФО", callback_data="back_to_main"))
+        bot.edit_message_text(final_text, call.message.chat.id, call.message.id, reply_markup=markup)
 
     elif call.data.startswith("adm_"):
         action, customer_id = call.data.split("_")[1], call.data.split("_")[2]
         if action == "yes":
             bot.send_message(customer_id, "Маҳсулоти шумо барқарор гардид барои дидани отзив @qawcaze 🥷✅")
-            bot.edit_message_caption("✅ Шумо ин закасро қабул кардед!", call.message.chat.id, call.message.message_id)
+            bot.edit_message_caption("✅ Шумо ин закасро қабул кардед!", call.message.chat.id, call.message.id)
         else:
             bot.send_message(customer_id, "Шумо иштибоҳ кардед боз кӯшиш кунед ‼️")
-            bot.edit_message_caption("❌ Шумо ин закасро рад кардед!", call.message.chat.id, call.message.message_id)
+            bot.edit_message_caption("❌ Шумо ин закасро рад кардед!", call.message.chat.id, call.message.id)
 
 @bot.message_handler(func=lambda m: m.text.isdigit())
 def handle_id(message):
@@ -145,14 +145,14 @@ def handle_id(message):
                 types.InlineKeyboardButton("10 сомона 🛍️", callback_data="combo_10"),
                 types.InlineKeyboardButton("30 сомона 🛍️", callback_data="combo_30"),
                 types.InlineKeyboardButton("50 сомона 🛍️", callback_data="combo_50"),
-                types.InlineKeyboardButton("⬅️ БА КАФО", callback_data="back_to_main") #
+                types.InlineKeyboardButton("⬅️ БА КАФО", callback_data="back_to_main")
             )
             bot.send_message(message.chat.id, f"🆔: {message.text} ✅\n\nЛутфан КОМБО-ро интихоб кунед 👇", reply_markup=markup)
         else:
             markup = types.InlineKeyboardMarkup(row_width=1)
             for name, price in PRICES.items():
                 markup.add(types.InlineKeyboardButton(f"{name} — {price} 🇹🇯", callback_data=f"select_{name}"))
-            markup.add(types.InlineKeyboardButton("⬅️ БА КАФО", callback_data="back_to_main")) #
+            markup.add(types.InlineKeyboardButton("⬅️ БА КАФО", callback_data="back_to_main"))
             bot.send_message(message.chat.id, f"🆔: {message.text} ✅\n\nЛутфан маҳсулотро интихоб кунед 👇", reply_markup=markup)
 
 @bot.message_handler(content_types=['photo'])
@@ -160,22 +160,29 @@ def handle_receipt(message):
     uid = message.from_user.id
     if uid in user_data:
         bot.reply_to(message, "Чек Кабул карда шуд ✅\nЛутфан интизор шавед то админ бинад 🥷🤳")
-
         now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         caption = (
             f"Шумо маҳсулоти нав доред админ ‼️\n\n"
             f"💸 харидор : {user_data[uid].get('first_name', 'Номаълум')}\n"
-            f"🗿 суроға : Тоҷикистон\n"
             f"🆔 -телеграм : @{user_data[uid].get('username', 'нест')}\n"
             f"🛍️ маҳсулот : {user_data[uid].get('product', '???')}\n"
-            f"📊 номи бозии харидор : Free Fire\n"
-            f"🏰 даста : —\n"
-            f"📊 марҳилаи харидор : —\n"
-            f"🥷 писандида : —\n"
-            f"〽️ марҳилаи донат : Омода\n"
             f"🆔 -free fire : {user_data[uid].get('id_game', '???')}\n"
             f"🧾 нарх : {user_data[uid].get('price', '???')} сомонӣ\n"
             f"⏱️ вақт : {now}\n\n"
-            f"💳 бо кадом корт ? : Душанбе City ({MY_CARD})\n"
-            f"🧾 чек воқеи аст ? : Бале
+            f"💳 Душанбе City ({MY_CARD})\n"
+            f"Шумо ин сураҳисобро қабул мекунед ❓"
+        )
+
+        admin_markup = types.InlineKeyboardMarkup()
+        admin_markup.add(types.InlineKeyboardButton("✅ ҚАБУЛ", callback_data=f"adm_yes_{uid}"),
+                         types.InlineKeyboardButton("❌ РАД", callback_data=f"adm_no_{uid}"))
+        bot.send_photo(ADMIN_ID, message.photo[-1].file_id, caption=caption, reply_markup=admin_markup)
+
+if __name__ == "__main__":
+    keep_alive()
+    while True:
+        try:
+            bot.polling(none_stop=True, interval=0, timeout=20)
+        except Exception as e:
+            time.sleep(10)
