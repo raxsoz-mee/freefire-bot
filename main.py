@@ -5,7 +5,7 @@ import time
 from flask import Flask
 from threading import Thread
 
-# --- ВЕБ-СЕРВЕР БАРОИ RENDER ---
+# --- ВЕБ-СЕРВЕР БАРОИ RENDER (БАРОИ ХОМӮШ НАШУДАН) ---
 app = Flask('')
 
 @app.route('/')
@@ -19,9 +19,9 @@ def keep_alive():
     t = Thread(target=run)
     t.start()
 
-# --- ТАНЗИМОТИ БОТ ---
+# --- ТАНЗИМОТ ---
 TOKEN = '8664780965:AAG2Wp--1GF_K3yZiWt8Ll_0gSV-6Y4tr0E'
-ADMIN_ID = 6895966276 
+ADMIN_ID = 6895966276
 CHANNEL_ID = '@qawcaze'
 MY_CARD = '9762000199713891'
 
@@ -132,7 +132,7 @@ def handle_id(message):
     uid = message.from_user.id
     if check_sub(uid):
         game_id = message.text
-        # Санҷиши дарозии ID (камтар аз 8 ё зиёдтар аз 14 - хато)
+        # --- САНҶИШИ ДАРОЗИИ ID ---
         if len(game_id) < 8 or len(game_id) > 14:
             bot.reply_to(message, "Шумо 🆔 хато додаед ‼️\n🆔 бояд аз 8 то 14 рақам бошад ✅")
             return 
@@ -186,10 +186,9 @@ def handle_receipt(message):
         bot.send_photo(ADMIN_ID, message.photo[-1].file_id, caption=caption, reply_markup=admin_markup)
 
 if __name__ == "__main__":
-    keep_alive()
+    keep_alive() # Ин серверро ба кор медарорад
     while True:
         try:
             bot.polling(none_stop=True, interval=0, timeout=20)
         except Exception as e:
             time.sleep(10)
-me.sleep
