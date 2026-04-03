@@ -131,9 +131,15 @@ def callback_query(call):
 def handle_id(message):
     uid = message.from_user.id
     if check_sub(uid):
+        game_id = message.text
+        # Санҷиши дарозии ID (камтар аз 8 ё зиёдтар аз 14 - хато)
+        if len(game_id) < 8 or len(game_id) > 14:
+            bot.reply_to(message, "Шумо 🆔 хато додаед ‼️\n🆔 бояд аз 8 то 14 рақам бошад ✅")
+            return 
+
         target = user_data.get(uid, {}).get('target', 'diamonds')
         user_data[uid] = {
-            'id_game': message.text, 
+            'id_game': game_id, 
             'username': message.from_user.username, 
             'target': target, 
             'first_name': message.from_user.first_name
@@ -147,13 +153,13 @@ def handle_id(message):
                 types.InlineKeyboardButton("50 сомона 🛍️", callback_data="combo_50"),
                 types.InlineKeyboardButton("⬅️ БА КАФО", callback_data="back_to_main")
             )
-            bot.send_message(message.chat.id, f"🆔: {message.text} ✅\n\nЛутфан КОМБО-ро интихоб кунед 👇", reply_markup=markup)
+            bot.send_message(message.chat.id, f"🆔: {game_id} ✅\n\nЛутфан КОМБО-ро интихоб кунед 👇", reply_markup=markup)
         else:
             markup = types.InlineKeyboardMarkup(row_width=1)
             for name, price in PRICES.items():
                 markup.add(types.InlineKeyboardButton(f"{name} — {price} 🇹🇯", callback_data=f"select_{name}"))
             markup.add(types.InlineKeyboardButton("⬅️ БА КАФО", callback_data="back_to_main"))
-            bot.send_message(message.chat.id, f"🆔: {message.text} ✅\n\nЛутфан маҳсулотро интихоб кунед 👇", reply_markup=markup)
+            bot.send_message(message.chat.id, f"🆔: {game_id} ✅\n\nЛутфан маҳсулотро интихоб кунед 👇", reply_markup=markup)
 
 @bot.message_handler(content_types=['photo'])
 def handle_receipt(message):
@@ -186,3 +192,4 @@ if __name__ == "__main__":
             bot.polling(none_stop=True, interval=0, timeout=20)
         except Exception as e:
             time.sleep(10)
+me.sleep
