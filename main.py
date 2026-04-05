@@ -3,7 +3,8 @@ from telebot import types
 import time
 
 # --- ТАНЗИМОТ ---
-TOKEN = '8664780965:AAG2Wp--1GF_K3yZiWt8Ll_0gSV-6Y4tr0E'
+# Токени навро аз BotFather гирифта, ин ҷо гузоред:
+TOKEN = '8664780965:AAG2Wp--1GF_K3yZiWt8Ll_0gSV-6Y4tr0E' 
 ADMIN_ID = 6895966276 
 CHANNEL_ID = '@qawcaze'
 MY_CARD = '9762000199713891'
@@ -11,14 +12,13 @@ MY_CARD = '9762000199713891'
 bot = telebot.TeleBot(TOKEN)
 user_data = {}
 
-# Танҳо Алмосҳо
+# Маҳсулот ва Нархҳо
 DIAMOND_PRICES = {
     "105 💎": "9.70", "210 💎": "19.30", "326 💎": "28.90",
     "431 💎": "38.50", "546 💎": "48.20", "1113 💎": "97.20",
     "2398 💎": "195.80", "6160 💎": "494.30"
 }
 
-# Танҳо Ваучерҳо
 VOUCHER_PRICES = {
     "Ваучер лайт": "6.00",
     "Неделя": "17.00",
@@ -26,7 +26,6 @@ VOUCHER_PRICES = {
     "Прокачка 1270 💎": "55.00"
 }
 
-# Танҳо Эво-пропуск
 EVO_PRICES = {
     "Эво-пропуск 3-д": "10.00", 
     "Эво-пропуск 7-д": "18.00", 
@@ -37,19 +36,20 @@ def check_sub(user_id):
     try:
         member = bot.get_chat_member(CHANNEL_ID, user_id)
         return member.status in ['member', 'administrator', 'creator']
-    except: return False
+    except:
+        return False
 
 @bot.message_handler(commands=['start'])
 def start(message):
     uid = message.from_user.id
     user_data[uid] = {'first_name': message.from_user.first_name, 'username': message.from_user.username}
+    
     if check_sub(uid):
-        # МАТНИ НАВИ ШУМО
         text = (
             "Ассалому Алейкум 🤝\n\n"
-            "• Ин бот 🗿 барои алмос 💎 донат кардан ба бозии Free Fire кор бурд шудааст ✅\n\n"
+            "• Ин бот 🗿 барои алмос 💎 донат кардан ба бозии Free Fire сохта шудааст ✅\n"
             "• Бот 🗿 метавонад бо 🆔 дар муддати 5️⃣ дақиқа алмосҳоятонро гузаронад 〽️\n\n"
-            "• Лутфан бо кадом маҳсулот ба бози донат кунед ⁉️"
+            "Лутфан маҳсулотро интихоб кунед:"
         )
         markup = types.InlineKeyboardMarkup(row_width=1)
         markup.add(
@@ -61,23 +61,26 @@ def start(message):
         bot.send_message(message.chat.id, text, reply_markup=markup)
     else:
         markup = types.InlineKeyboardMarkup()
-        markup.add(types.InlineKeyboardButton("📢 Обуна шудан", url="https://t.me/qawcaze"))
+        markup.add(types.InlineKeyboardButton("📢 Обуна шудан", url=f"https://t.me/{CHANNEL_ID.replace('@', '')}"))
         markup.add(types.InlineKeyboardButton("✅ Тафтиш", callback_data="verify"))
         bot.send_message(message.chat.id, "Аввал ба канал обуна шавед:", reply_markup=markup)
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
     uid = call.from_user.id
-    if uid not in user_data: user_data[uid] = {'first_name': call.from_user.first_name, 'username': call.from_user.username}
+    if uid not in user_data:
+        user_data[uid] = {'first_name': call.from_user.first_name, 'username': call.from_user.username}
     
     if call.data == "verify":
         if check_sub(uid):
-            bot.delete_message(call.message.chat.id, call.message.id); start(call.message)
+            bot.delete_message(call.message.chat.id, call.message.id)
+            start(call.message)
         else:
             bot.answer_callback_query(call.id, "❌ Обуна нашудаед!", show_alert=True)
     
     elif call.data == "back_to_main":
-        bot.delete_message(call.message.chat.id, call.message.id); start(call.message)
+        bot.delete_message(call.message.chat.id, call.message.id)
+        start(call.message)
 
     elif call.data in ["ask_id_diamonds", "ask_id_vouchers", "ask_id_combo", "ask_id_evo"]:
         if call.data == "ask_id_diamonds": user_data[uid]['target'] = 'diamonds'
@@ -107,27 +110,37 @@ def callback_query(call):
         user_data[uid].update({'product': product, 'price': amount})
         game_id = user_data[uid].get('id_game', '???')
         
-        pay_msg = (f"🛍️ Маҳсулот қабул карда шуд ✅\n\n• 🛍️ : {product}\n• 🆔 : {game_id}\n• Нарх : {amount} сомонӣ\n\nЛутфан Душанбе City - ро интихоб кунед ✅")
+        pay_msg = (f"🛍️ Маҳсулот: {product}\n🆔 FF: {game_id}\n💰 Нарх: {amount} см\n\nЛутфан ба корти зер маблағро гузаронед ва чекро фиристед.")
         pay_url = f"http://pay.expresspay.tj/?A={MY_CARD}&s={amount}&c=&f1=133"
         markup = types.InlineKeyboardMarkup()
         markup.add(types.InlineKeyboardButton("💳 Душанбе City", url=pay_url))
         markup.add(types.InlineKeyboardButton("⬅️ БА КАФО", callback_data="back_to_main"))
         bot.edit_message_text(pay_msg, call.message.chat.id, call.message.id, reply_markup=markup)
-        bot.send_message(call.message.chat.id, "Пас аз пардохт, лутфан чекро (скриншот) ба ҳамин ҷо фиристед ‼️📊🧾")
 
     elif call.data.startswith("adm_"):
-        action, cust_id = call.data.split("_")[1], call.data.split("_")[2]
-        msg = "Маҳсулоти шумо барқарор гардид ✅" if action == "yes" else "❌ Рад шуд! Иштибоҳ кардед."
+        action = call.data.split("_")[1]
+        cust_id = call.data.split("_")[2]
+        
+        if action == "yes":
+            msg = "Маҳсулоти шумо бо муваффақият гузаронида шуд ✅"
+            res_text = "✅ Қабул шуд"
+        else:
+            msg = "❌ Рад шуд! Иштибоҳ дар чек ё ID."
+            res_text = "❌ Рад шуд"
+            
         bot.send_message(cust_id, msg)
-        bot.edit_message_caption("Иҷро шуд!", call.message.chat.id, call.message.id)
+        bot.edit_message_caption(caption=f"{call.message.caption}\n\nСтатус: {res_text}", 
+                                 chat_id=call.message.chat.id, 
+                                 message_id=call.message.id)
 
-@bot.message_handler(func=lambda m: m.text.isdigit())
+@bot.message_handler(func=lambda m: m.text and m.text.isdigit())
 def handle_id(message):
     uid = message.from_user.id
     if check_sub(uid):
-        if len(message.text) < 8 or len(message.text) > 14:
+        if not (8 <= len(message.text) <= 14):
             bot.reply_to(message, "🆔 хато! Бояд 8-14 рақам бошад.")
             return
+        
         if uid not in user_data: user_data[uid] = {}
         user_data[uid]['id_game'] = message.text
         target = user_data[uid].get('target', 'diamonds')
@@ -155,9 +168,19 @@ def handle_receipt(message):
     uid = message.from_user.id
     if uid in user_data and 'product' in user_data[uid]:
         bot.reply_to(message, "Чек қабул шуд! Интизор шавед...")
-        caption = (f"Харидор: {user_data[uid].get('first_name')}\n🛍️ Маҳсулот: {user_data[uid]['product']}\n🆔 FF: {user_data[uid]['id_game']}\n🧾 Нарх: {user_data[uid]['price']} см")
-        markup = types.InlineKeyboardMarkup().add(types.InlineKeyboardButton("✅ ҚАБУЛ", callback_data=f"adm_yes_{uid}"), types.InlineKeyboardButton("❌ РАД", callback_data=f"adm_no_{uid}"))
+        
+        caption = (f"👤 Харидор: {user_data[uid].get('first_name')}\n"
+                   f"🛍️ Маҳсулот: {user_data[uid]['product']}\n"
+                   f"🆔 FF: {user_data[uid]['id_game']}\n"
+                   f"🧾 Нарх: {user_data[uid]['price']} см")
+        
+        markup = types.InlineKeyboardMarkup()
+        markup.add(
+            types.InlineKeyboardButton("✅ ҚАБУЛ", callback_data=f"adm_yes_{uid}"),
+            types.InlineKeyboardButton("❌ РАД", callback_data=f"adm_no_{uid}")
+        )
         bot.send_photo(ADMIN_ID, message.photo[-1].file_id, caption=caption, reply_markup=markup)
 
 if __name__ == "__main__":
+    print("Бот фаъол шуд...")
     bot.infinity_polling()
