@@ -4,10 +4,10 @@ import time
 
 # --- ТАНЗИМОТ ---
 # Токени навро аз BotFather гирифта, ин ҷо гузоред:
-TOKEN = '8664780965:AAG2Wp--1GF_K3yZiWt8Ll_0gSV-6Y4tr0E' 
-ADMIN_ID = 7424918633 
-CHANNEL_ID = '@sheykh_smm'
-MY_CARD = '9762000192460334'
+TOKEN = '8629886672:AAHmlENIioTTYl4qquYjBjAQPe10I3ILFIk' 
+ADMIN_ID = 6895966276 
+CHANNEL_ID = '@qawcaze'
+MY_CARD = '9762000199713891'
 
 bot = telebot.TeleBot(TOKEN)
 user_data = {}
