@@ -4,7 +4,7 @@ import time
 
 # --- ТАНЗИМОТ ---
 # Токени навро аз BotFather гирифта, ин ҷо гузоред:
-TOKEN = '8629886672:AAHmlENIioTTYl4qquYjBjAQPe10I3ILFIk' 
+TOKEN = '8614189465:AAE-53azvWRGux2e8DN0iWMZ7Axk-M2qwQo' 
 ADMIN_ID = 6895966276 
 CHANNEL_ID = '@qawcaze'
 MY_CARD = '9762000199713891'
