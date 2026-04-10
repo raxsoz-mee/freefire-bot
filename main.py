@@ -3,7 +3,7 @@ from telebot import types
 
 bot = telebot.TeleBot("8461445139:AAEN_FwlOjymRTUi5OSeJf7VfRdD7vZT84Y")
 
-# Рӯйхати нархнома (барои осон шудани кор)
+# Рӯйхати нархнома
 PRICES = {
     "pack_105": {"name": "105 𝐝𝐢𝐚𝐦𝐨𝐧𝐝 💎", "price": "9.5 🇹🇯"},
     "pack_210": {"name": "210 𝐝𝐢𝐚𝐦𝐨𝐧𝐝 💎", "price": "19 🇹🇯"},
@@ -27,7 +27,6 @@ PRICES = {
     "pack_12320": {"name": "12 320 𝐝𝐢𝐚𝐦𝐨𝐧𝐝 💎", "price": "950 🇹🇯"},
 }
 
-# Барои муваққатан нигоҳ доштани ID-и корбарон
 user_data = {}
 
 @bot.callback_query_handler(func=lambda call: call.data == "buy_diamonds")
@@ -40,11 +39,19 @@ def ask_id(call):
 
 def process_id_step(message):
     user_id_game = message.text
-    user_data[message.chat.id] = {'game_id': user_id_game} # ID-ро дар хотира мегирем
+    
+    # САНҶИШ: Танҳо рақам ва дарозӣ аз 8 то 14
+    if not user_id_game.isdigit() or not (8 <= len(user_id_game) <= 14):
+        msg = bot.send_message(message.chat.id, 
+                               "Шумо иштибох кардед ‼️\n"
+                               "Харф бояд набошад ва ракам аз 8 то 14 то бошад ‼️\n"
+                               "Лутфан боз кушиш кунед :")
+        bot.register_next_step_handler(msg, process_id_step)
+        return
+
+    user_data[message.chat.id] = {'game_id': user_id_game}
     
     markup = types.InlineKeyboardMarkup(row_width=1)
-    
-    # Сохтани тугмаҳо аз рӯи рӯйхати PRICES
     for key, val in PRICES.items():
         markup.add(types.InlineKeyboardButton(text=f"{val['name']} = {val['price']}", callback_data=key))
     
@@ -58,8 +65,6 @@ def process_id_step(message):
 def process_payment_step(call):
     chat_id = call.message.chat.id
     selected_pack = PRICES[call.data]
-    
-    # Гирифтани ID-е, ки пештар захира карда будем
     game_id = user_data.get(chat_id, {}).get('game_id', "Номаълум")
     
     result_text = f"""Маҳсулот қабул карда карда шуд ✅
@@ -70,7 +75,6 @@ def process_payment_step(call):
 
 Ҳамаи рӯйхат пур карда шуд акнун ба супоридани маблағ мегузарем 🧾 :"""
 
-    # Ин ҷо метавонед тугмаи пардохтро илова кунед
     markup = types.InlineKeyboardMarkup()
     btn_pay = types.InlineKeyboardButton(text="Пардохт кардан 💳", callback_data="pay_now")
     markup.add(btn_pay)
