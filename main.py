@@ -131,7 +131,7 @@ def process_diamond_selection(call):
 def pay_dc(call):
     chat_id = call.message.chat.id
     price = user_data[chat_id]['price']
-    link = f"http://pay.expresspay.tj/?A=9762000199713891&s={price}&c=2249&f1=133"
+    link = f"http://pay.expresspay.tj/?A=9762000199713891&s={price}&c=ADMIN_QAWCAZ_DONAT&f1=133"
     
     markup = types.InlineKeyboardMarkup(row_width=1)
     markup.add(
