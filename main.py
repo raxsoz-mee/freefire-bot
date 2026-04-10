@@ -68,7 +68,10 @@ def start(message):
 @bot.callback_query_handler(func=lambda call: call.data == "check_subscription")
 def check_callback(call):
     if check_sub(call.from_user.id):
-        bot.delete_message(call.message.chat.id, call.message.message_id)
+        try:
+            bot.delete_message(call.message.chat.id, call.message.message_id)
+        except:
+            pass
         start(call.message)
     else:
         bot.answer_callback_query(call.id, "Шумо ҳанӯз обуна нашудаед! ❌", show_alert=True)
@@ -78,6 +81,7 @@ def check_callback(call):
 def ask_id(call):
     msg = bot.send_message(call.message.chat.id, 
                            "Шумо дар ( 𝒅𝒊𝒂𝒎𝒐𝒏𝒅 𝒕𝒐 𝙵𝚛𝚎𝚎 𝙵𝚒𝚛𝚎 💎 ) қарор доред ‼️\n\n"
+                           
                            "Лутфан ба бот 🆔 - и худро фиристед :")
     bot.register_next_step_handler(msg, process_id_step)
     bot.answer_callback_query(call.id)
@@ -100,11 +104,13 @@ def process_id_step(message):
     
     bot.send_message(message.chat.id, 
                      f"🆔 Қабул карда шуд ✅\n\n"
+                     
                      f"• 🆔 : {user_id_game}\n\n"
+                     
                      f"Лутфан маҳсулотро барои ба профилатон гузаронидан интихоб кунед :", 
                      reply_markup=markup)
 
-# 4. Натиҷаи Ниҳоӣ (БЕ ТУГМА)
+# 4. Натиҷаи Ниҳоӣ
 @bot.callback_query_handler(func=lambda call: call.data.startswith("pack_"))
 def process_diamond_selection(call):
     chat_id = call.message.chat.id
@@ -119,12 +125,11 @@ def process_diamond_selection(call):
 
 Ҳамаи рӯйхат пур карда шуд акнун ба супоридани маблағ мегузарем 🧾 :"""
 
-    # Иваз кардани паём (БЕ ТУГМА)
     bot.edit_message_text(chat_id=chat_id, 
                           message_id=call.message.message_id, 
                           text=result_text)
     bot.answer_callback_query(call.id)
 
+# 5. Оғози бот (Ислоҳшуда барои Railway)
 if __name__ == "__main__":
-    bot.remove_webhook()
-    bot.polling(none_stop=True, skip_pending_updates=True)
+    bot.polling(none_stop=True)
