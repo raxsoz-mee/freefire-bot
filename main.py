@@ -2,16 +2,8 @@ import telebot
 from telebot import types
 
 bot = telebot.TeleBot("8461445139:AAEN_FwlOjymRTUi5OSeJf7VfRdD7vZT84Y")
-CHANNEL_ID = "@qawcaze"
 
-def check_sub(user_id):
-    try:
-        member = bot.get_chat_member(CHANNEL_ID, user_id)
-        return member.status != 'left'
-    except Exception:
-        return False
-
-# Паёми асосии бот, ки шумо хостед
+# Матни менюи асосӣ
 MAIN_TEXT = """Ассалому Алейкум 🤖🤝👤
 
     🤖• дар бораи бот •🤖
@@ -22,7 +14,7 @@ MAIN_TEXT = """Ассалому Алейкум 🤖🤝👤
 
 Барои харидани алмос лутфан тугмаҳоро интихоб кунед :"""
 
-# Функсия барои сохтани тугмаҳои алмос
+# Функсия барои сохтани тугмаҳои менюи асосӣ
 def main_menu_buttons():
     markup = types.InlineKeyboardMarkup(row_width=1)
     btn_diamond = types.InlineKeyboardButton(text="𝒅𝒊𝒂𝒎𝒐𝒏𝒅 𝒕𝒐 𝙵𝚛𝚎𝚎 𝙵𝚒𝚛𝚎 💎", callback_data="buy_diamonds")
@@ -30,35 +22,38 @@ def main_menu_buttons():
     markup.add(btn_diamond, btn_voucher)
     return markup
 
+# 1. Вақте ки тугмаи "diamond to Free Fire" пахш мешавад
+@bot.callback_query_handler(func=lambda call: call.data == "buy_diamonds")
+def ask_id(call):
+    # Паёми пурсиши ID
+    msg = bot.send_message(call.message.chat.id, 
+                           "Шумо дар холи хозир ( 𝒅𝒊𝒂𝒎𝒐𝒏𝒅 𝒕𝒐 𝙵𝚛𝚎𝚎 𝙵𝚒𝚛𝚎 💎 ) қарор доред ‼️\n\n"
+                           "Лутфан ба бот 🆔 - и худро фиристед :")
+    
+    # Ботро интизор мемонем, ки паёми навбатиро (ID) гирад
+    bot.register_next_step_handler(msg, process_id_step)
+    bot.answer_callback_query(call.id)
+
+# 2. Қабули ID ва намоиши он
+def process_id_step(message):
+    user_id_game = message.text # ID-и бозие, ки корбар фиристод
+    
+    # Сохтани тугмаҳо барои интихоби маҳсулот (нархномаро баъдтар илова мекунем)
+    markup = types.InlineKeyboardMarkup(row_width=2)
+    btn1 = types.InlineKeyboardButton(text="100 💎", callback_data="pack_100")
+    btn2 = types.InlineKeyboardButton(text="210 💎", callback_data="pack_210")
+    markup.add(btn1, btn2)
+    
+    # Паёми тасдиқи ID бо нишон додани худи ID
+    bot.send_message(message.chat.id, 
+                     f"🆔 Қабул карда шуд ✅\n\n"
+                     f"• 🆔 : {user_id_game}\n\n"
+                     f"Лутфан маҳсулотро барои ба профилатон гузаронидан интихоб кунед :", 
+                     reply_markup=markup)
+
+# Оғози бот (қисми /start ва ғайра бояд бошад)
 @bot.message_handler(commands=['start'])
 def start(message):
-    user_id = message.from_user.id
-    
-    if check_sub(user_id):
-        bot.send_message(user_id, MAIN_TEXT, reply_markup=main_menu_buttons())
-    else:
-        markup = types.InlineKeyboardMarkup()
-        btn_sub = types.InlineKeyboardButton(text="qawcaz", url="https://t.me/qawcaze")
-        btn_done = types.InlineKeyboardButton(text="Обуна шудам ✅", callback_data="check_subscription")
-        markup.add(btn_sub)
-        markup.add(btn_done)
-        
-        bot.send_message(user_id, "Салом! Барои ботро истифода бурдан ба канали мо обуна шавед:", reply_markup=markup)
-
-@bot.callback_query_handler(func=lambda call: call.data == "check_subscription")
-def check_callback(call):
-    user_id = call.from_user.id
-    if check_sub(user_id):
-        # Аввал паёми санҷиширо нест мекунем
-        bot.delete_message(call.message.chat.id, call.message.message_id)
-        # Паёми асосиро мефиристем
-        bot.send_message(user_id, MAIN_TEXT, reply_markup=main_menu_buttons())
-    else:
-        bot.answer_callback_query(call.id, "Шумо ҳанӯз обуна нашудаед! ❌", show_alert=True)
-
-# Барои он ки ҳангоми пахши тугмаҳо бот ҳоло чизе нагӯяд
-@bot.callback_query_handler(func=lambda call: call.data in ["buy_diamonds", "buy_vouchers"])
-def ignore_buttons(call):
-    bot.answer_callback_query(call.id) # Танҳо "загрузка"-ро аз болои экран дур мекунад
+    bot.send_message(message.chat.id, MAIN_TEXT, reply_markup=main_menu_buttons())
 
 bot.polling(none_stop=True)
