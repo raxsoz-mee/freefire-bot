@@ -5,7 +5,7 @@ from datetime import datetime
 # ТОКЕН ВА МАЪЛУМОТ
 bot = telebot.TeleBot("8461445139:AAEN_FwlOjymRTUi5OSeJf7VfRdD7vZT84Y")
 CHANNEL_ID = "@qawcaze"
-ADMIN_ID = 5440268529 # ID-и худро инҷо санҷ
+ADMIN_ID = 6895966276 # ID-и худро инҷо санҷ
 
 # НАРХНОМА
 PRICES = {
