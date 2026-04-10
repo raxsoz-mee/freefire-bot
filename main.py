@@ -1,53 +1,50 @@
 import telebot
-import os
 from telebot import types
 
-# Токенро аз Railway мегирад
-TOKEN = os.getenv('8461445139:AAEN_FwlOjymRTUi5OSeJf7VfRdD7vZT84Y')
-bot = telebot.TeleBot(TOKEN)
+bot = telebot.TeleBot("8461445139:AAEN_FwlOjymRTUi5OSeJf7VfRdD7vZT84Y")
 
-# Юзернейми канали шумо
-CHANNEL_USERNAME = "@qawcaze"
+# ID-и канал ё юзернейми он (бо @)
+CHANNEL_ID = "@qawcaze"
 
 def check_sub(user_id):
     try:
-        # Методи get_chat_member барои санҷиши обуна
-        member = bot.get_chat_member(CHANNEL_USERNAME, user_id)
-        # Агар корбар дар канал бошад, статусаш 'left' нест
+        # Статуси корбарро дар канал месанҷем
+        member = bot.get_chat_member(CHANNEL_ID, user_id)
         if member.status != 'left':
             return True
-        return False
-    except Exception as e:
-        print(f"Хатогӣ: {e}")
+        else:
+            return False
+    except Exception:
         return False
 
 @bot.message_handler(commands=['start'])
 def start(message):
     user_id = message.from_user.id
+    
     if check_sub(user_id):
-        bot.send_message(message.chat.id, "Хуш омадед! Шумо аллакай ба канал обуна ҳастед ва метавонед ботро истифода баред.")
+        # Агар обуна бошад, паёми асосӣ меравад
+        bot.send_message(user_id, "Хуш омадед! Шумо ба канал обуна ҳастед ва метавонед ботро истифода баред.")
     else:
-        # Сохтани тугма барои обуна шудан
+        # Агар обуна набошад, тугмаи каналро нишон медиҳем
         markup = types.InlineKeyboardMarkup()
-        btn_sub = types.InlineKeyboardButton(text="Обуна шудан ба канал", url=f"https://t.me")
-        # Тугмаи "Санҷиш" пас аз обуна шудан
-        btn_check = types.InlineKeyboardButton(text="Санҷиши обуна", callback_data="check_subscription")
+        btn_sub = types.InlineKeyboardButton(text="qawcaz", url=f"https://t.me/qawcaze")
+        # Тугма барои санҷиши дубора (Check)
+        btn_done = types.InlineKeyboardButton(text="Обуна шудам ✅", callback_data="check_subscription")
         markup.add(btn_sub)
-        markup.add(btn_check)
+        markup.add(btn_done)
         
-        bot.send_message(
-            message.chat.id, 
-            "Барои истифодаи бот, лутфан ба канали мо обуна шавед:", 
-            reply_markup=markup
-        )
+        bot.send_message(user_id, 
+                         "Салом! Барои ботро истифода бурдан ба канали мо обуна шавед:", 
+                         reply_markup=markup)
 
 @bot.callback_query_handler(func=lambda call: call.data == "check_subscription")
-def callback_check(call):
+def check_callback(call):
     if check_sub(call.from_user.id):
-        bot.delete_message(call.message.chat.id, call.message.message_id)
-        bot.send_message(call.message.chat.id, "Ташаккур барои обуна! Акнун бот барои шумо дастрас аст.")
+        bot.answer_callback_query(call.id, "Ташаккур барои обуна! ✅")
+        bot.edit_message_text(chat_id=call.message.chat.id, 
+                              message_id=call.message.message_id, 
+                              text="Шумо муваффақона обуна шудед! Акнун метавонед ботро истифода баред.")
     else:
-        bot.answer_callback_query(call.id, "Шумо ҳоло ҳам обуна нашудаед!", show_alert=True)
+        bot.answer_callback_query(call.id, "Шумо ҳанӯз обуна нашудаед! ❌", show_alert=True)
 
-if __name__ == "__main__":
-    bot.infinity_polling()
+bot.polling(none_stop=True)
