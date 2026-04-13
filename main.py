@@ -4,7 +4,7 @@ from datetime import datetime
 import os
 
 bot = telebot.TeleBot("8461445139:AAEN_FwlOjymRTUi5OSeJf7VfRdD7vZT84Y")
-CHANNEL_ID = "@od1naevff" "odinaev_ff"
+CHANNEL_ID = "@od1naevff"
 ADMIN_ID = 6895966276
 
 # НАРХНОМАИ АЛМОС ВА ВАУЧЕР
