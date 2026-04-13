@@ -9,7 +9,7 @@ ADMIN_ID = 6895966276
 # НАРХНОМАИ АЛМОС ВА ВАУЧЕР
 PRICES = {
     "pack_105": {"name": "105 𝐝𝐢𝐚𝐦𝐨𝐧𝐝 💎", "price": 9.5},
-    "pack_210": {"name": "210 𝐝𝐢𝐚𝐦𝐨𝐧𝐝 💎", "price": 19},
+    "pack_210": {"name": "210 𝐝𝐢𝐚𝐦𝐨н𝐝 💎", "price": 19},
     "pack_326": {"name": "326 𝐝𝐢𝐚𝐦𝐨н𝐝 💎", "price": 28.5},
     "pack_431": {"name": "431 𝐝𝐢𝐚𝐦𝐨н𝐝 💎", "price": 38},
     "pack_546": {"name": "546 𝐝𝐢𝐚𝐦𝐨н𝐝 💎", "price": 47.5},
@@ -43,6 +43,18 @@ def check_sub(user_id):
         return member.status in ['member', 'administrator', 'creator']
     except: return False
 
+# --- ФАРМОНИ АДМИН ---
+@bot.message_handler(commands=['admin'])
+def admin_panel(message):
+    if message.from_user.id == ADMIN_ID:
+        markup = types.InlineKeyboardMarkup(row_width=2)
+        markup.add(
+            types.InlineKeyboardButton("📊 ОМОР", callback_data="adm_stats"),
+            types.InlineKeyboardButton("📢 ХАБАРНОМА", callback_data="adm_broadcast"),
+            types.InlineKeyboardButton("❌ ПУШИДАН", callback_data="adm_close")
+        )
+        bot.send_message(ADMIN_ID, "<b>⚡️ ПАНЕЛИ ИДОРАКУНИИ БОСС ⚡️</b>", parse_mode="HTML", reply_markup=markup)
+
 @bot.message_handler(commands=['start'])
 def start(message):
     user_id = message.from_user.id
@@ -69,10 +81,15 @@ def start(message):
 def ask_id(call):
     mode = "𝒅𝒊𝒂𝒎𝒐𝒏𝒅 𝒕𝒐 𝙵𝚛ее 𝙵𝚒𝚛е 💎" if call.data == "buy_diamonds" else "𝒗𝒐𝒖𝒄𝒉𝒆𝒓 𝒕𝒐 𝙵𝚛ее 𝙵𝚒𝚛е 🎫"
     user_data[call.message.chat.id] = {'mode': call.data}
-    msg = bot.send_message(call.message.chat.id, f"Шумо дар ( {mode} ) қарор доред ‼️\n\nЛутфан ба бот 🆔 - и худро фиристед :")
+    
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton(text="БА ҚАФО 🔃", callback_data="start_over"))
+    
+    msg = bot.send_message(call.message.chat.id, f"Шумо дар ( {mode} ) қарор доред ‼️\n\nЛутфан ба бот 🆔 - и худро фиристед :", reply_markup=markup)
     bot.register_next_step_handler(msg, process_id_step)
 
 def process_id_step(message):
+    if message.text == "/start": return
     u_id = message.text
     chat_id = message.chat.id
     if not u_id or not u_id.isdigit() or not (8 <= len(u_id) <= 14):
@@ -84,13 +101,12 @@ def process_id_step(message):
     markup = types.InlineKeyboardMarkup(row_width=1)
     
     mode = user_data[chat_id]['mode']
-    if mode == "buy_diamonds":
-        keys = [k for k in PRICES if k.startswith("pack_")]
-    else:
-        keys = ["v_month", "v_nedelya", "v_layt", "v_propusk"]
+    keys = [k for k in PRICES if k.startswith("pack_")] if mode == "buy_diamonds" else ["v_month", "v_nedelya", "v_layt", "v_propusk"]
 
     for k in keys:
         markup.add(types.InlineKeyboardButton(text=f"{PRICES[k]['name']} = {PRICES[k]['price']} 🇹🇯", callback_data=k))
+    
+    markup.add(types.InlineKeyboardButton(text="БА ҚАФО 🔃", callback_data="start_over"))
     
     bot.send_message(chat_id, f"🆔 Қабул карда шуд ✅\n\n• 🆔 : {u_id}\n\nЛутфан маҳсулотро барои ба профилатон гузаронидан интихоб кунед :", reply_markup=markup)
 
@@ -115,7 +131,9 @@ def payment(call):
     markup = types.InlineKeyboardMarkup(row_width=1)
     if call.data == "pay_dc":
         markup.add(types.InlineKeyboardButton(text="𝙳𝚞𝚜𝚑𝚊н𝚋𝚎 𝙲𝚒𝚝𝚢 💳", url=f"http://pay.expresspay.tj/?A=9762000199713891&s={price}&c=_ADMIN_QAWCAZ_THEDANATERBOT_&f1=133"))
-    markup.add(types.InlineKeyboardButton(text="𝑚𝑜𝑛𝑒𝑦 𝑖𝑠 𝑡𝑜 𝑎𝑑𝑚𝑖𝑛 𝑐𝑜𝑟𝑑 🧑‍💻", callback_data="request_check"))
+    
+    markup.add(types.InlineKeyboardButton(text="𝑚𝑜𝑛𝑒𝑦 𝑖𝑠 𝑡𝑜 𝑎𝑑𝑚𝑖𝑛 𝑐𝑜𝑟𝑑 🧑‍💻", callback_data="request_check"),
+               types.InlineKeyboardButton(text="БА ҚАФО 🔃", callback_data="start_over"))
     
     text = f"Шумо бо корти мо дастраси надоштаед ‼️\nБояд шумо аз тарики дигар корт ё банкомат ба ин корт маблагро супоред ✅️\n\n💳 : 9762000199713891\n💸 : {price} 🇹🇯\n\nБаъд аз пулро супоридед лутфан тугмаи 𝑚𝑜𝑛𝑒𝑦 𝑖𝑠 𝑡𝑜 𝑎𝑑𝑚𝑖𝑛 𝑐𝑜𝑟𝑑 🧑‍💻 ро пахш кунед :"
     if call.data == "pay_dc":
@@ -125,10 +143,13 @@ def payment(call):
 
 @bot.callback_query_handler(func=lambda call: call.data == "request_check")
 def request_check(call):
-    bot.send_message(call.message.chat.id, "Маблағ қабул карда шуд ✅\n\nЛутфан расми чеки маблағро ба бот фиристед ✅")
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton(text="БА ҚАФО 🔃", callback_data="start_over"))
+    bot.send_message(call.message.chat.id, "Маблағ қабул карда шуд ✅\n\nЛутфан расми чеки маблағро ба бот фиристед ✅", reply_markup=markup)
     bot.register_next_step_handler(call.message, send_admin_panel)
 
 def send_admin_panel(message):
+    if message.text == "/start": return
     if message.content_type == 'photo':
         cid = message.chat.id
         u = message.from_user
@@ -153,9 +174,17 @@ def send_admin_panel(message):
     else:
         bot.register_next_step_handler(bot.send_message(message.chat.id, "Танҳо расм фиристед!"), send_admin_panel)
 
-@bot.callback_query_handler(func=lambda call: call.data.startswith(("ok_", "no_", "start_over", "check_sub")))
+@bot.callback_query_handler(func=lambda call: True)
 def logic_btns(call):
-    if call.data == "start_over":
+    if call.data == "adm_stats":
+        bot.answer_callback_query(call.id, f"👥 Мизоҷони фаъол: {len(user_data)}", show_alert=True)
+    elif call.data == "adm_close":
+        bot.delete_message(call.message.chat.id, call.message.message_id)
+    elif call.data == "adm_broadcast":
+        msg = bot.send_message(ADMIN_ID, "Матни паёмро фиристед:")
+        bot.register_next_step_handler(msg, send_broadcast)
+    elif call.data == "start_over":
+        bot.delete_message(call.message.chat.id, call.message.message_id)
         start(call.message)
     elif call.data == "check_sub":
         if check_sub(call.from_user.id):
@@ -163,12 +192,18 @@ def logic_btns(call):
             start(call.message)
         else:
             bot.answer_callback_query(call.id, "Обуна нашудаед! ❌", show_alert=True)
-    else:
+    elif "_" in call.data:
         target_id = int(call.data.split("_")[1])
         if call.data.startswith("ok_"):
-            bot.send_message(target_id, "Маҳсулоти шумо бо муваффақият ба профилатон гузаронида шуд ✅\nБарои дидани расми чек @od1naevff 🧑‍💻")
+            bot.send_message(target_id, "Маҳсулоти шумо бо муваффақият ба профилатон гузаронида шуд ✅\nБарои дидани расми чек @odinaev_ff 🧑‍💻")
         else:
             bot.send_message(target_id, "Шумо иштибоҳ кардед лутфан боз кӯшиш кунед ‼️\nИштибоҳ мумкин дар чек ё 🆔 аст ‼️")
         bot.edit_message_caption(caption=call.message.caption + "\n\nҶавоб дода шуд ✅", chat_id=call.message.chat.id, message_id=call.message.message_id)
+
+def send_broadcast(message):
+    for uid in user_data.keys():
+        try: bot.send_message(uid, message.text)
+        except: continue
+    bot.send_message(ADMIN_ID, "Фиристода шуд!")
 
 bot.polling(none_stop=True)
