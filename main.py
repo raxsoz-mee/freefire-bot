@@ -3,7 +3,7 @@ from telebot import types
 from datetime import datetime
 
 bot = telebot.TeleBot("8461445139:AAEN_FwlOjymRTUi5OSeJf7VfRdD7vZT84Y")
-CHANNEL_ID = "@qawcaze"
+CHANNEL_ID = "@od1naevff"
 ADMIN_ID = 6895966276
 
 # НАРХНОМАИ АЛМОС ВА ВАУЧЕР
