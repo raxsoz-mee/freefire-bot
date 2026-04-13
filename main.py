@@ -1,15 +1,16 @@
 import telebot
 from telebot import types
 from datetime import datetime
+import os
 
 bot = telebot.TeleBot("8461445139:AAEN_FwlOjymRTUi5OSeJf7VfRdD7vZT84Y")
-CHANNEL_ID = "@od1naevff"
+CHANNEL_ID = "@od1naevff" "odinaev_ff"
 ADMIN_ID = 6895966276
 
 # НАРХНОМАИ АЛМОС ВА ВАУЧЕР
 PRICES = {
     "pack_105": {"name": "105 𝐝𝐢𝐚𝐦𝐨𝐧𝐝 💎", "price": 9.5},
-    "pack_210": {"name": "210 𝐝𝐢𝐚𝐦𝐨н𝐝 💎", "price": 19},
+    "pack_210": {"name": "210 𝐝𝐢𝐚𝐦𝐨𝐧𝐝 💎", "price": 19},
     "pack_326": {"name": "326 𝐝𝐢𝐚𝐦𝐨н𝐝 💎", "price": 28.5},
     "pack_431": {"name": "431 𝐝𝐢𝐚𝐦𝐨н𝐝 💎", "price": 38},
     "pack_546": {"name": "546 𝐝𝐢𝐚𝐦𝐨н𝐝 💎", "price": 47.5},
@@ -37,13 +38,21 @@ PRICES = {
 
 user_data = {}
 
+def save_user(user_id):
+    if not os.path.exists("users.txt"):
+        with open("users.txt", "w") as f: f.write("")
+    with open("users.txt", "r") as f:
+        users = f.read().splitlines()
+    if str(user_id) not in users:
+        with open("users.txt", "a") as f:
+            f.write(str(user_id) + "\n")
+
 def check_sub(user_id):
     try:
         member = bot.get_chat_member(CHANNEL_ID, user_id)
         return member.status in ['member', 'administrator', 'creator']
     except: return False
 
-# --- ФАРМОНИ АДМИН ---
 @bot.message_handler(commands=['admin'])
 def admin_panel(message):
     if message.from_user.id == ADMIN_ID:
@@ -58,6 +67,7 @@ def admin_panel(message):
 @bot.message_handler(commands=['start'])
 def start(message):
     user_id = message.from_user.id
+    save_user(user_id) # ID-ро сабт мекунад барои рассылка
     if check_sub(user_id):
         markup = types.InlineKeyboardMarkup(row_width=1)
         markup.add(types.InlineKeyboardButton(text="𝒅𝒊𝒂𝒎𝒐𝒏𝒅 𝒕𝒐 𝙵𝚛ее 𝙵𝚒𝚛е 💎", callback_data="buy_diamonds"),
@@ -130,7 +140,7 @@ def payment(call):
     price = user_data[chat_id]['price']
     markup = types.InlineKeyboardMarkup(row_width=1)
     if call.data == "pay_dc":
-        markup.add(types.InlineKeyboardButton(text="𝙳𝚞𝚜𝚑𝚊н𝚋𝚎 𝙲𝚒𝚝𝚢 💳", url=f"http://pay.expresspay.tj/?A=9762000199713891&s={price}&c=_ADMIN_QAWCAZ_THEDANATERBOT_&f1=133"))
+        markup.add(types.InlineKeyboardButton(text="𝙳𝚞𝚜𝚑𝚊н𝚋𝚎 𝙲𝚒𝚝𝚢 💳", url=f"http://pay.expresspay.tj/?A=9762000199713891&s={price}&c=_ADMIN_ODINAEV_THEDANATERBOT_&f1=133"))
     
     markup.add(types.InlineKeyboardButton(text="𝑚𝑜𝑛𝑒𝑦 𝑖𝑠 𝑡𝑜 𝑎𝑑𝑚𝑖𝑛 𝑐𝑜𝑟𝑑 🧑‍💻", callback_data="request_check"),
                types.InlineKeyboardButton(text="БА ҚАФО 🔃", callback_data="start_over"))
@@ -177,12 +187,15 @@ def send_admin_panel(message):
 @bot.callback_query_handler(func=lambda call: True)
 def logic_btns(call):
     if call.data == "adm_stats":
-        bot.answer_callback_query(call.id, f"👥 Мизоҷони фаъол: {len(user_data)}", show_alert=True)
+        if os.path.exists("users.txt"):
+            with open("users.txt", "r") as f: count = len(f.read().splitlines())
+        else: count = 0
+        bot.answer_callback_query(call.id, f"👥 Мизоҷон дар база: {count}", show_alert=True)
     elif call.data == "adm_close":
         bot.delete_message(call.message.chat.id, call.message.message_id)
     elif call.data == "adm_broadcast":
-        msg = bot.send_message(ADMIN_ID, "Матни паёмро фиристед:")
-        bot.register_next_step_handler(msg, send_broadcast)
+        msg = bot.send_message(ADMIN_ID, "Матни хабарномаро ворид кунед:")
+        bot.register_next_step_handler(msg, send_broadcast_real)
     elif call.data == "start_over":
         bot.delete_message(call.message.chat.id, call.message.message_id)
         start(call.message)
@@ -200,10 +213,16 @@ def logic_btns(call):
             bot.send_message(target_id, "Шумо иштибоҳ кардед лутфан боз кӯшиш кунед ‼️\nИштибоҳ мумкин дар чек ё 🆔 аст ‼️")
         bot.edit_message_caption(caption=call.message.caption + "\n\nҶавоб дода шуд ✅", chat_id=call.message.chat.id, message_id=call.message.message_id)
 
-def send_broadcast(message):
-    for uid in user_data.keys():
-        try: bot.send_message(uid, message.text)
+def send_broadcast_real(message):
+    if not os.path.exists("users.txt"): return
+    with open("users.txt", "r") as f:
+        users = f.read().splitlines()
+    count = 0
+    for u in users:
+        try:
+            bot.send_message(int(u), message.text)
+            count += 1
         except: continue
-    bot.send_message(ADMIN_ID, "Фиристода шуд!")
+    bot.send_message(ADMIN_ID, f"Фиристода шуд ба {count} нафар ✅")
 
 bot.polling(none_stop=True)
