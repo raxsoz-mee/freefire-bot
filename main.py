@@ -166,7 +166,7 @@ def logic_btns(call):
     else:
         target_id = int(call.data.split("_")[1])
         if call.data.startswith("ok_"):
-            bot.send_message(target_id, "Маҳсулоти шумо бо муваффақият ба профилатон гузаронида шуд ✅\nБарои дидани расми чек @qawcaze 🧑‍💻")
+            bot.send_message(target_id, "Маҳсулоти шумо бо муваффақият ба профилатон гузаронида шуд ✅\nБарои дидани расми чек @od1naevff 🧑‍💻")
         else:
             bot.send_message(target_id, "Шумо иштибоҳ кардед лутфан боз кӯшиш кунед ‼️\nИштибоҳ мумкин дар чек ё 🆔 аст ‼️")
         bot.edit_message_caption(caption=call.message.caption + "\n\nҶавоб дода шуд ✅", chat_id=call.message.chat.id, message_id=call.message.message_id)
