@@ -85,7 +85,7 @@ def start(message):
 Барои харидани алмос лутфан тугмаҳоро интихоб кунед :""", reply_markup=markup)
     else:
         markup = types.InlineKeyboardMarkup()
-        markup.add(types.InlineKeyboardButton(text="qawcaz", url="https://t.me/qawcaze"),
+        markup.add(types.InlineKeyboardButton(text="O D I N A E V 📍", url="https://t.me/od1naevff"),
                    types.InlineKeyboardButton(text="Обуна шудам ✅", callback_data="check_sub"))
         bot.send_message(user_id, "Салом! Барои ботро истифода бурдан ба канали мо обуна шавед:", reply_markup=markup)
 
